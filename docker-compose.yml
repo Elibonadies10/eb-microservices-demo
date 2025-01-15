@@ -1,0 +1,67 @@
+
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - java-service
+      - python-service
+    networks:
+      - app-network
+
+  java-service:
+    build: ./java-service
+    ports:
+      - "8080:8080"
+    environment:
+      - PYTHON_SERVICE_URL=http://python-service:5000
+      - OTEL_SERVICE_NAME=java-service
+      - OTEL_TRACES_EXPORTER=otlp
+      - OTEL_METRICS_EXPORTER=otlp
+      - OTEL_LOGS_EXPORTER=otlp
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://alloy:4317
+      - OTEL_INSTRUMENTATION_COMMON_DEFAULT_ENABLED=true
+      - JAVA_TOOL_OPTIONS=-javaagent:/app/opentelemetry-java-instrumentation.jar
+    networks:
+      - app-network
+
+  python-service:
+    build: ./python-service
+    ports:
+      - "5000:5000"
+    environment:
+      - JAVA_SERVICE_URL=http://java-service:8080
+    networks:
+      - app-network
+
+  load-testing:
+    build:
+      context: ./load-testing
+      dockerfile: Dockerfile
+    environment:
+      - LOAD_TEST_DURATION=300
+      - LOAD_TEST_USERS=50
+      - LOAD_TEST_SPAWN_RATE=5
+    networks:
+      - app-network
+    depends_on:
+      - frontend
+      - python-service
+      - java-service
+
+  alloy:
+    image: grafana/alloy
+    volumes:
+      - ./alloy/config.alloy:/etc/alloy/config.alloy
+    command: ["run", "--server.http.listen-addr=0.0.0.0:12345", "--storage.path=/var/lib/alloy/data", "/etc/alloy/config.alloy"]
+    ports:
+      - "12345:12345"
+      - "4317:4317"
+      - "4318:4318"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

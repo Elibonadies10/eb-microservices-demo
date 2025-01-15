@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.javaService.name }}
+spec:
+  replicas: {{ .Values.javaService.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.javaService.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.javaService.name }}
+    spec:
+      containers:
+      - name: {{ .Values.javaService.name }}
+        image: "{{ .Values.global.registry }}{{ .Values.javaService.image.repository }}:{{ .Values.javaService.image.tag }}"
+        imagePullPolicy: {{ .Values.javaService.image.pullPolicy }}
+        ports:
+        - containerPort: {{ .Values.javaService.service.targetPort }}
+        env:
+        - name: PYTHON_SERVICE_URL
+          value: "http://{{ .Values.pythonService.name }}:{{ .Values.pythonService.service.port }}"
+        resources:
+          {{- toYaml .Values.javaService.resources | nindent 12 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.javaService.name }}
+spec:
+  type: ClusterIP
+  ports:
+  - port: {{ .Values.javaService.service.port }}
+    targetPort: {{ .Values.javaService.service.targetPort }}
+  selector:
+    app: {{ .Values.javaService.name }}

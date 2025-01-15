@@ -1,0 +1,70 @@
+global:
+  environment: development
+  registry: ""  # Empty for local images
+
+frontend:
+  replicaCount: 1
+  image:
+    repository: microservices-demo-frontend
+    tag: latest
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi
+
+pythonService:
+  replicaCount: 1
+  image:
+    repository: microservices-demo-python-service
+    tag: latest
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi
+
+javaService:
+  replicaCount: 1
+  image:
+    repository: microservices-demo-java-service
+    tag: latest
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 200m
+      memory: 512Mi
+
+loadTesting:
+  enabled: true
+  config:
+    duration: 60
+    users: 10
+    spawnRate: 2
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+  hosts:
+    - host: ""  # Will use cluster IP
+      paths:
+        - path: /
+          pathType: Prefix
+          service: frontend
+          port: 80
+        - path: /api/python
+          pathType: Prefix
+          service: python-service
+          port: 5000
+        - path: /api/java
+          pathType: Prefix
+          service: java-service
+          port: 8080

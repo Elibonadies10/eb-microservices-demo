@@ -1,0 +1,103 @@
+# Global settings
+global:
+  environment: production
+  registry: "" # Add your registry prefix here if needed
+
+# Frontend service configuration
+frontend:
+  name: frontend
+  replicaCount: 2
+  image:
+    repository: microservices-demo-frontend
+    tag: latest
+    pullPolicy: IfNotPresent
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+  service:
+    port: 80
+    targetPort: 3000
+
+# Python service configuration
+pythonService:
+  name: python-service
+  replicaCount: 2
+  image:
+    repository: microservices-demo-python-service
+    tag: latest
+    pullPolicy: IfNotPresent
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+  service:
+    port: 5000
+    targetPort: 5000
+
+# Java service configuration
+javaService:
+  name: java-service
+  replicaCount: 2
+  image:
+    repository: microservices-demo-java-service
+    tag: latest
+    pullPolicy: IfNotPresent
+  resources:
+    requests:
+      cpu: 200m
+      memory: 512Mi
+    limits:
+      cpu: 500m
+      memory: 1Gi
+  service:
+    port: 8080
+    targetPort: 8080
+
+# Load testing configuration
+loadTesting:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: microservices-demo-load-testing
+    tag: latest
+    pullPolicy: IfNotPresent
+  config:
+    duration: 300
+    users: 50
+    spawnRate: 5
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+# Ingress configuration
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+  hosts:
+    - host: "" # Add your host here
+      paths:
+        - path: /
+          pathType: Prefix
+          service: frontend
+          port: 80
+        - path: /api/python
+          pathType: Prefix
+          service: python-service
+          port: 5000
+        - path: /api/java
+          pathType: Prefix
+          service: java-service
+          port: 8080

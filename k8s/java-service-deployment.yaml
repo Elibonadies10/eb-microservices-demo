@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: java-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: java-service
+  template:
+    metadata:
+      labels:
+        app: java-service
+    spec:
+      containers:
+      - name: java-service
+        image: microservices-demo-java-service:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: PYTHON_SERVICE_URL
+          value: "http://python-service:5000"
+        resources:
+          requests:
+            cpu: "200m"
+            memory: "512Mi"
+          limits:
+            cpu: "500m"
+            memory: "1Gi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: java-service
+spec:
+  ports:
+  - port: 8080
+    targetPort: 8080
+  selector:
+    app: java-service

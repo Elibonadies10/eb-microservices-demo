@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: load-testing
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: load-testing
+  template:
+    metadata:
+      labels:
+        app: load-testing
+    spec:
+      containers:
+      - name: load-testing
+        image: microservices-demo-load-testing:latest
+        env:
+        - name: LOAD_TEST_DURATION
+          value: "300"
+        - name: LOAD_TEST_USERS
+          value: "50"
+        - name: LOAD_TEST_SPAWN_RATE
+          value: "5"
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "200m"
+            memory: "256Mi"

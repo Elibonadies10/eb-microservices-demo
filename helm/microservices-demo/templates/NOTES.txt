@@ -1,0 +1,34 @@
+Thank you for installing {{ .Chart.Name }}.
+
+Your release is named {{ .Release.Name }}.
+
+To learn more about the release, try:
+
+  $ helm status {{ .Release.Name }}
+  $ helm get all {{ .Release.Name }}
+
+{{- if .Values.ingress.enabled }}
+You can access the application at:
+{{- range .Values.ingress.hosts }}
+  {{- if .host }}
+  http://{{ .host }}
+  {{- else }}
+  http://<cluster-ip>
+  {{- end }}
+{{- end }}
+{{- else }}
+The application is only accessible within the cluster as no Ingress is enabled.
+{{- end }}
+
+Available endpoints:
+- Frontend: http://<address>/
+- Python Service: http://<address>/api/python
+- Java Service: http://<address>/api/java
+
+{{- if .Values.loadTesting.enabled }}
+
+Load testing is enabled with the following configuration:
+- Duration: {{ .Values.loadTesting.config.duration }} seconds
+- Users: {{ .Values.loadTesting.config.users }}
+- Spawn Rate: {{ .Values.loadTesting.config.spawnRate }} users per second
+{{- end }}

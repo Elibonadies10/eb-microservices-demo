@@ -1,0 +1,29 @@
+{{- if .Values.loadTesting.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: load-testing
+spec:
+  replicas: {{ .Values.loadTesting.replicaCount }}
+  selector:
+    matchLabels:
+      app: load-testing
+  template:
+    metadata:
+      labels:
+        app: load-testing
+    spec:
+      containers:
+      - name: load-testing
+        image: "{{ .Values.global.registry }}{{ .Values.loadTesting.image.repository }}:{{ .Values.loadTesting.image.tag }}"
+        imagePullPolicy: {{ .Values.loadTesting.image.pullPolicy }}
+        env:
+        - name: LOAD_TEST_DURATION
+          value: "{{ .Values.loadTesting.config.duration }}"
+        - name: LOAD_TEST_USERS
+          value: "{{ .Values.loadTesting.config.users }}"
+        - name: LOAD_TEST_SPAWN_RATE
+          value: "{{ .Values.loadTesting.config.spawnRate }}"
+        resources:
+          {{- toYaml .Values.loadTesting.resources | nindent 12 }}
+{{- end }}
