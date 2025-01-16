@@ -5,7 +5,7 @@ global:
 frontend:
   replicaCount: 1
   image:
-    repository: microservices-demo-frontend
+    repository: eb-microservices-demo-frontend
     tag: latest
   resources:
     requests:
@@ -18,7 +18,7 @@ frontend:
 pythonService:
   replicaCount: 1
   image:
-    repository: microservices-demo-python-service
+    repository: eb-microservices-demo-python-service
     tag: latest
   resources:
     requests:
@@ -31,7 +31,7 @@ pythonService:
 javaService:
   replicaCount: 1
   image:
-    repository: microservices-demo-java-service
+    repository: eb-microservices-demo-java-service
     tag: latest
   resources:
     requests:

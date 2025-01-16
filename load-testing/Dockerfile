@@ -13,12 +13,11 @@ RUN apt-get update && apt-get install -y \
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
-COPY locustfile.py run_load_test.py ./
+COPY locustfile.py app.py ./
 
 # Environment variables for test configuration
 ENV LOAD_TEST_DURATION=300
 ENV LOAD_TEST_USERS=50
 ENV LOAD_TEST_SPAWN_RATE=5
 
-# Run the automated test script instead of the web interface
-CMD ["python", "run_load_test.py"]
+CMD ["python", "app.py"]

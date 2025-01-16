@@ -1,56 +1,62 @@
-
 services:
-  frontend:
+  eb-frontend:
     build: ./frontend
+    image: eb-microservices-demo-frontend:latest
     ports:
       - "3000:80"
     depends_on:
-      - java-service
-      - python-service
+      - eb-java-service
+      - eb-python-service
     networks:
       - app-network
 
-  java-service:
+  eb-java-service:
     build: ./java-service
+    image: eb-microservices-demo-java-service:latest
     ports:
       - "8080:8080"
     environment:
-      - PYTHON_SERVICE_URL=http://python-service:5000
-      - OTEL_SERVICE_NAME=java-service
+      - PYTHON_SERVICE_URL=http://eb-python-service:5000
+      - OTEL_SERVICE_NAME=eb-java-service
       - OTEL_TRACES_EXPORTER=otlp
       - OTEL_METRICS_EXPORTER=otlp
       - OTEL_LOGS_EXPORTER=otlp
-      - OTEL_EXPORTER_OTLP_ENDPOINT=http://alloy:4317
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://eb-alloy:4317
       - OTEL_INSTRUMENTATION_COMMON_DEFAULT_ENABLED=true
       - JAVA_TOOL_OPTIONS=-javaagent:/app/opentelemetry-java-instrumentation.jar
     networks:
       - app-network
 
-  python-service:
+  eb-python-service:
     build: ./python-service
+    image: eb-microservices-demo-python-service:latest
     ports:
       - "5000:5000"
     environment:
-      - JAVA_SERVICE_URL=http://java-service:8080
+      - JAVA_SERVICE_URL=http://eb-java-service:8080
     networks:
       - app-network
 
-  load-testing:
+  eb-load-testing:
     build:
       context: ./load-testing
       dockerfile: Dockerfile
+    image: eb-microservices-demo-load-testing:latest
     environment:
       - LOAD_TEST_DURATION=300
       - LOAD_TEST_USERS=50
       - LOAD_TEST_SPAWN_RATE=5
+      - LOCUST_HOST=http://eb-frontend
+    ports:
+      - "8089:8089"
     networks:
       - app-network
     depends_on:
-      - frontend
-      - python-service
-      - java-service
+      - eb-frontend
+      - eb-python-service
+      - eb-java-service
 
-  alloy:
+  eb-alloy:
     image: grafana/alloy
     volumes:
       - ./alloy/config.alloy:/etc/alloy/config.alloy

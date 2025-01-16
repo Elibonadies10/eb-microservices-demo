@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class JavaController {
 
-    @GetMapping("/generate-error")
+    @GetMapping("/api/java/generate-error")
     public ResponseEntity<String> generateError() {
         throw new RuntimeException("This is a generated error from the Java service!");
     }

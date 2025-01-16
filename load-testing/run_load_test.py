@@ -9,14 +9,16 @@ def run_load_test(duration_seconds=300, num_users=50, spawn_rate=5):
     cmd = [
         "locust",
         "-f", "locustfile.py",
-        "--headless",
-        "--host", "http://frontend:3000",
+        "--web-host", "0.0.0.0",
+        "--web-port", "8089",
+        "--host", os.getenv("LOCUST_HOST", "http://eb-frontend"),
         "--users", str(num_users),
         "--spawn-rate", str(spawn_rate),
         "--run-time", f"{duration_seconds}s",
         "--only-summary"     # Only print the final summary
     ]
     
+    print(f"Starting Locust web interface on port 8089")
     print(f"Starting load test with {num_users} users, spawn rate of {spawn_rate}/sec for {duration_seconds} seconds")
     
     # Run the load test

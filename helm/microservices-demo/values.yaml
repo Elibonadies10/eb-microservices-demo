@@ -8,7 +8,7 @@ frontend:
   name: frontend
   replicaCount: 2
   image:
-    repository: microservices-demo-frontend
+    repository: eb-microservices-demo-frontend
     tag: latest
     pullPolicy: IfNotPresent
   resources:
@@ -27,7 +27,7 @@ pythonService:
   name: python-service
   replicaCount: 2
   image:
-    repository: microservices-demo-python-service
+    repository: eb-microservices-demo-python-service
     tag: latest
     pullPolicy: IfNotPresent
   resources:
@@ -46,7 +46,7 @@ javaService:
   name: java-service
   replicaCount: 2
   image:
-    repository: microservices-demo-java-service
+    repository: eb-microservices-demo-java-service
     tag: latest
     pullPolicy: IfNotPresent
   resources:
@@ -65,7 +65,7 @@ loadTesting:
   enabled: true
   replicaCount: 1
   image:
-    repository: microservices-demo-load-testing
+    repository: eb-microservices-demo-load-testing
     tag: latest
     pullPolicy: IfNotPresent
   config:
