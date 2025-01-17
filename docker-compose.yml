@@ -24,6 +24,9 @@ services:
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://eb-alloy:4317
       - OTEL_INSTRUMENTATION_COMMON_DEFAULT_ENABLED=true
       - JAVA_TOOL_OPTIONS=-javaagent:/app/opentelemetry-java-instrumentation.jar
+      - PYROSCOPE_USERNAME=${PYROSCOPE_USERNAME}
+      - PYROSCOPE_PASSWORD=${PYROSCOPE_PASSWORD}
+      - PYROSCOPE_SERVER_ADDRESS=https://profiles-prod-003.grafana.net
     networks:
       - app-network
 
