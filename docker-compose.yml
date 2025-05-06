@@ -24,9 +24,11 @@ services:
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://eb-alloy:4317
       - OTEL_INSTRUMENTATION_COMMON_DEFAULT_ENABLED=true
       - JAVA_TOOL_OPTIONS=-javaagent:/app/opentelemetry-java-instrumentation.jar
+      - OTEL_RESOURCE_ATTRIBUTES=service.name=eb-java-service,service.namespace=eb-microservices,service.instance.id=java-1
       - PYROSCOPE_USERNAME=${PYROSCOPE_USERNAME}
       - PYROSCOPE_PASSWORD=${PYROSCOPE_PASSWORD}
       - PYROSCOPE_SERVER_ADDRESS=https://profiles-prod-003.grafana.net
+      - PYROSCOPE_APPLICATION_NAME=eb-java-service
     networks:
       - app-network
 
@@ -37,6 +39,20 @@ services:
       - "5000:5000"
     environment:
       - JAVA_SERVICE_URL=http://eb-java-service:8080
+      - OTEL_SERVICE_NAME=eb-python-service
+      - OTEL_TRACES_EXPORTER=otlp
+      - OTEL_METRICS_EXPORTER=otlp
+      - OTEL_LOGS_EXPORTER=otlp
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://eb-alloy:4317
+      - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
+      - OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED=true
+      - OTEL_PYTHON_FLASK_EXCLUDED_URLS=""
+      - OTEL_LOG_LEVEL=debug
+      - OTEL_RESOURCE_ATTRIBUTES=service.name=eb-python-service,service.namespace=eb-microservices,service.instance.id=python-1
+      - PYROSCOPE_USERNAME=${PYROSCOPE_USERNAME}
+      - PYROSCOPE_PASSWORD=${PYROSCOPE_PASSWORD}
+      - PYROSCOPE_SERVER_ADDRESS=https://profiles-prod-003.grafana.net
+      - PYROSCOPE_APPLICATION_NAME=eb-python-service
     networks:
       - app-network
 
@@ -63,9 +79,9 @@ services:
     image: grafana/alloy
     volumes:
       - ./alloy/config.alloy:/etc/alloy/config.alloy
-    command: ["run", "--server.http.listen-addr=0.0.0.0:12345", "--storage.path=/var/lib/alloy/data", "/etc/alloy/config.alloy"]
+    command: ["run", "--server.http.listen-addr=0.0.0.0:12346", "--storage.path=/var/lib/alloy/data", "--stability.level=public-preview", "/etc/alloy/config.alloy"]
     ports:
-      - "12345:12345"
+      - "12346:12346"
       - "4317:4317"
       - "4318:4318"
     networks:

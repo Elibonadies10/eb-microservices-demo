@@ -42,12 +42,24 @@ function App() {
   const [isLoadingPython, setIsLoadingPython] = useState(false);
   const [isLoadingJava, setIsLoadingJava] = useState(false);
   const [isLoadingTest, setIsLoadingTest] = useState(false);
+  const [javaToPythonMessage, setJavaToPythonMessage] = useState('');
+  const [pythonToJavaMessage, setPythonToJavaMessage] = useState('');
+  const [isLoadingJavaToPython, setIsLoadingJavaToPython] = useState(false);
+  const [isLoadingPythonToJava, setIsLoadingPythonToJava] = useState(false);
+  const [pythonError, setPythonError] = useState('');
+  const [javaError, setJavaError] = useState('');
 
   const generatePythonError = async () => {
     setIsLoadingPython(true);
+    setPythonError('');
     try {
       await fetch('/api/python/generate-error');
     } catch (error) {
+      if (error instanceof Error) {
+        setPythonError(error.message);
+      } else {
+        setPythonError('An error occurred in Python service');
+      }
       console.error("Python Error occurred:", error);
     } finally {
       setIsLoadingPython(false);
@@ -56,9 +68,15 @@ function App() {
 
   const generateJavaError = async () => {
     setIsLoadingJava(true);
+    setJavaError('');
     try {
       await fetch('/api/java/generate-error');
     } catch (error) {
+      if (error instanceof Error) {
+        setJavaError(error.message);
+      } else {
+        setJavaError('An error occurred in Java service');
+      }
       console.error("Java Error occurred:", error);
     } finally {
       setIsLoadingJava(false);
@@ -100,6 +118,34 @@ function App() {
       const axiosError = error as AxiosError;
       console.error('Error fetching Java message:', axiosError);
       setJavaMessage('Error fetching message from Java service');
+    }
+  };
+
+  const callJavaToPython = async () => {
+    setIsLoadingJavaToPython(true);
+    try {
+      const response = await axios.get<ServiceResponse>('/api/java/call-python');
+      setJavaToPythonMessage(response.data.message);
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      console.error('Error in Java to Python call:', axiosError);
+      setJavaToPythonMessage('Error in Java to Python service call');
+    } finally {
+      setIsLoadingJavaToPython(false);
+    }
+  };
+
+  const callPythonToJava = async () => {
+    setIsLoadingPythonToJava(true);
+    try {
+      const response = await axios.get<ServiceResponse>('/api/python/call-java');
+      setPythonToJavaMessage(response.data.message);
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      console.error('Error in Python to Java call:', axiosError);
+      setPythonToJavaMessage('Error in Python to Java service call');
+    } finally {
+      setIsLoadingPythonToJava(false);
     }
   };
 
@@ -165,6 +211,17 @@ function App() {
                 color="#E76F51"
                 isLoading={isLoadingPython}
               />
+              {pythonError && (
+                <p style={{ 
+                  color: '#E76F51', 
+                  backgroundColor: '#FDECEA',
+                  padding: '10px',
+                  borderRadius: '4px',
+                  marginTop: '10px'
+                }}>
+                  {pythonError}
+                </p>
+              )}
             </div>
             <div style={{ marginTop: '20px' }}>
               <ActionButton 
@@ -173,6 +230,45 @@ function App() {
                 color="#E76F51"
                 isLoading={isLoadingJava}
               />
+              {javaError && (
+                <p style={{ 
+                  color: '#E76F51', 
+                  backgroundColor: '#FDECEA',
+                  padding: '10px',
+                  borderRadius: '4px',
+                  marginTop: '10px'
+                }}>
+                  {javaError}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Inter-service Communication Section */}
+          <div className="section" style={{
+            backgroundColor: 'white',
+            padding: '20px',
+            borderRadius: '8px',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+          }}>
+            <h2 style={{ color: '#264653', marginBottom: '20px' }}>Inter-service Communication</h2>
+            <div>
+              <ActionButton 
+                onClick={callJavaToPython} 
+                label="Java → Python Call" 
+                color="#264653"
+                isLoading={isLoadingJavaToPython}
+              />
+              <p>{javaToPythonMessage}</p>
+            </div>
+            <div style={{ marginTop: '20px' }}>
+              <ActionButton 
+                onClick={callPythonToJava} 
+                label="Python → Java Call" 
+                color="#264653"
+                isLoading={isLoadingPythonToJava}
+              />
+              <p>{pythonToJavaMessage}</p>
             </div>
           </div>
 

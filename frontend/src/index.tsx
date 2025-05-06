@@ -17,7 +17,7 @@ initializeFaro({
     ...getWebInstrumentations(),
     new TracingInstrumentation(),
     new ReactIntegration(),
-  ],
+  ]
 });
 
 const router = createBrowserRouter([

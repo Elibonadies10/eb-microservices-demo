@@ -2,3 +2,10 @@ flask==3.0.0
 requests==2.31.0
 python-dotenv==1.0.0
 flask-cors==4.0.0
+protobuf==3.20.3
+opentelemetry-api==1.21.0
+opentelemetry-sdk==1.21.0
+opentelemetry-instrumentation-flask==0.42b0
+opentelemetry-exporter-otlp==1.21.0
+pyroscope-io==0.8.11
+pyroscope-otel==0.4.0
