@@ -7,7 +7,21 @@ This project demonstrates a simple microservices architecture with:
 
 ## Setup and Running
 
-### Python Service
+### Using Docker Compose (Recommended)
+The easiest way to run all services is using Docker Compose:
+
+```bash
+docker compose up
+```
+
+This will start all services:
+- Frontend: http://localhost:3000
+- Python Service: http://localhost:5000
+- Java Service: http://localhost:8080
+
+### Manual Setup (Alternative)
+
+#### Python Service
 ```bash
 cd python-service
 python -m venv venv
@@ -15,22 +29,19 @@ source venv/bin/activate  # On Windows: .\venv\Scripts\activate
 pip install -r requirements.txt
 python src/app.py
 ```
-The Python service will run on http://localhost:5000
 
-### Java Service
+#### Java Service
 ```bash
 cd java-service
 ./mvnw spring-boot:run  # On Windows: mvnw.cmd spring-boot:run
 ```
-The Java service will run on http://localhost:8080
 
-### Frontend
+#### Frontend
 ```bash
 cd frontend
 npm install
 npm start
 ```
-The frontend will run on http://localhost:3000
 
 ## API Endpoints
 
